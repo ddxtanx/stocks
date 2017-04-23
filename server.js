@@ -10,4 +10,14 @@ app.get("/", function(req, res){
 app.get("/api/getStocks", function(req, res){
     stocks.getDb(req, res);
 })
+app.post("/addStock", function(req, res){
+    console.log("handling addition");
+    var code = req.body.code;
+    stocks.addStock(code, req, res);
+});
+app.post("/deleteStocks", function(req, res){
+    var code = req.body.code;
+    console.log("handling removal for "+code);
+    stocks.removeStock(code, req, res);
+})
 app.listen(process.env.PORT || 8080);

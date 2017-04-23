@@ -3,9 +3,26 @@ function addCodes(codes){
         var code = codes[x];
         var element = "<div id='code"+x+"' class='stock' for-code='"+code+"'>\
                             <h3> "+code+" </h3>\
+                            <button type='button' class='removeBtn' for-code='"+code+"'>X</button>\
                         </div>";
         $("#stocks").prepend(element);
     }
+    $(".removeBtn").click(function(){
+        var forCode = $(this).attr('for-code');
+        $.ajax({
+            type: "POST",
+            url:"/deleteStocks",
+            data: {
+                code: forCode
+            },
+            success: function(data){
+                window.location.reload();
+            },
+            error: function(data){
+                
+            }
+        })
+    })
 }
 function drawChart(){
     var data = new google.visualization.DataTable();
@@ -52,9 +69,22 @@ function drawChart(){
     });
 }
 $(document).ready(function(){
-  google.charts.load('current', {packages: ['corechart']});
-  google.charts.setOnLoadCallback(drawChart);
-  $("#submit").click(function(){
-      var code = $("#")
-  })
+    google.charts.load('current', {packages: ['corechart']});
+    google.charts.setOnLoadCallback(drawChart);
+    $("#submitButton").click(function(){
+        var code = $("#code").val();
+        $.ajax({
+            type: "POST",
+            url: "addStock",
+            data: {
+              code: code
+            }, 
+            success: function(data){
+              window.location.reload();
+            },
+            error: function(data){
+              alert("That is not a valid ticker, please try again");
+            }
+        });
+    });
 });

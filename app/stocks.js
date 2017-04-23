@@ -55,5 +55,56 @@ function getStocks(codes, req, res){
         })
     })
 }
+function addStock(code, req, res){
+    var apiUrl = "http://query.yahooapis.com/v1/public/yql";
+    var startDate = '2017-01-01';
+    var endDate = '2017-04-08';
+    var data = encodeURIComponent('select Symbol, Date, Close from yahoo.finance.historicaldata where symbol in (\"'+code+'\") and startDate = "' + startDate + '" and endDate = "' + endDate + '"')
+    var url = apiUrl+"?q="+data+"&env=store://datatables.org/alltableswithkeys&format=json";
+    http.get(url, function(response){
+        var dat = ""
+        response.on('data', function(data){
+            dat+=data
+        });
+        response.on('end', function(){
+            dat = JSON.parse(dat);
+            if(dat.query.results==null){
+                res.writeHead(503, {'Content-Type': 'text/json'});
+                var error = {
+                    error: "Not A Valid Ticker"
+                };
+                res.end(JSON.stringify(error));
+            } else{
+                mongo.connect(mongoUri, function(err, db){
+                    if(err) throw err;
+                    var stocks = db.collection('stocks');
+                    var insertData = {
+                        stockCode: code
+                    };
+                    stocks.insert(insertData, function(err, data){
+                        if(err) throw err;
+                        res.writeHead(200, {'Content-Type': 'text/json'});
+                        res.end(JSON.stringify(data));
+                    });
+                })
+            }
+        });
+    });
+}
+function removeStock(code, req, res){
+    mongo.connect(mongoUri, function(err, db){
+        if(err) throw err;
+        var stocks = db.collection('stocks');
+        stocks.remove({
+            stockCode: code
+        }, function(err, data){
+            if(err) throw err;
+            res.writeHead(200, {'Content-Type':'text/json'});
+            res.end(JSON.stringify(data));
+        })
+    })
+}
 module.exports.getStocks = getStocks;
 module.exports.getDb = getDb;
+module.exports.addStock = addStock;
+module.exports.removeStock = removeStock;
