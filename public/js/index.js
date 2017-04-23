@@ -1,3 +1,52 @@
+var vals = [];
+var chart;
+var HOST = window.location.origin.replace(/^http/, 'ws');
+var ws = new WebSocket(HOST);
+var persCodes = [];
+var view;
+var options = {
+    title: 'Stocks',
+    vAxis: {
+        title: 'Value'
+    },
+    hAxis:{
+        title: 'Date'
+    },
+    width: $(window).width()*1,
+    height: $(window).height()*0.8
+};
+$(document).ready(function(){
+    ws.onmessage = function (event) {
+        var data = event.data;
+        data = JSON.parse(data);
+        console.log(data);
+        window.location.reload();
+    };
+    google.charts.load('current', {packages: ['corechart']});
+    google.charts.setOnLoadCallback(drawChart);
+    $("#submitButton").click(function(){
+        var code = $("#code").val();
+        $.ajax({
+            type: "POST",
+            url: "addStock",
+            data: {
+              code: code
+            }, 
+            success: function(data){
+                var dat = {
+                    event: "added",
+                    code: code,
+                    codes: persCodes
+                }
+                ws.send(JSON.stringify(dat));
+              window.location.reload();
+            },
+            error: function(data){
+              alert("That is not a valid ticker, please try again");
+            }
+        });
+    });
+});
 function addCodes(codes){
     for(var x = 0; x<codes.length; x++){
         var code = codes[x];
@@ -16,6 +65,12 @@ function addCodes(codes){
                 code: forCode
             },
             success: function(data){
+                var data = {
+                    event: "removed",
+                    code: forCode,
+                    codes: codes
+                }
+                ws.send(JSON.stringify(data));
                 window.location.reload();
             },
             error: function(data){
@@ -25,18 +80,16 @@ function addCodes(codes){
     })
 }
 function drawChart(){
-    var data = new google.visualization.DataTable();
+    googleData = new google.visualization.DataTable();
     $.ajax({
         type: "GET",
         url:"/api/getStocks",
         success: function(response){
             var stockData = response.stocks;
             var codes = response.codes;
-            data.addColumn('string', "DATE");
-            for(var x = 0; x<codes.length; x++){
-                data.addColumn('number', codes[x]);   
-            }
-            var vals = [];
+            persCodes = codes;
+            vals[0]= ["DATE"].concat(codes)
+            console.log(vals);
             var firstCode = codes[0];
             for(var x = 0; x<stockData[firstCode].length; x++){
                 var date = stockData[firstCode][x].Date;
@@ -45,22 +98,11 @@ function drawChart(){
                     var code = codes[y];
                     search.push(parseFloat(stockData[code][x].Close));
                 }
-                vals[x] = [date].concat(search);
+                vals[x+1] = [date].concat(search);
             }
-            data.addRows(vals);
-            var options = {
-                title: 'Stocks',
-                vAxis: {
-                    title: 'Value'
-                },
-                hAxis:{
-                    title: 'Date'
-                },
-                width: $(window).width()*1,
-                height: $(window).height()*0.8
-            };
-            var chart = new google.visualization.LineChart(document.getElementById('chart'));
-            chart.draw(data, options);
+            vals = google.visualization.arrayToDataTable(vals)
+            chart = new google.visualization.LineChart(document.getElementById('chart'));
+            chart.draw(vals, options);
             addCodes(codes);
         },
         error: function(data){
@@ -68,23 +110,3 @@ function drawChart(){
         }
     });
 }
-$(document).ready(function(){
-    google.charts.load('current', {packages: ['corechart']});
-    google.charts.setOnLoadCallback(drawChart);
-    $("#submitButton").click(function(){
-        var code = $("#code").val();
-        $.ajax({
-            type: "POST",
-            url: "addStock",
-            data: {
-              code: code
-            }, 
-            success: function(data){
-              window.location.reload();
-            },
-            error: function(data){
-              alert("That is not a valid ticker, please try again");
-            }
-        });
-    });
-});

@@ -27,10 +27,10 @@ function getStocks(codes, req, res){
     var stringCodes = editedCodes.toString();
     var apiUrl = "http://query.yahooapis.com/v1/public/yql";
     var startDate = '2017-01-01';
-    var endDate = '2017-04-08';
+    var now = new Date();
+    var endDate = now.getFullYear()+"-"+now.getMonth()+"-"+now.getDate;
     var data = encodeURIComponent('select Symbol, Date, Close from yahoo.finance.historicaldata where symbol in ('+stringCodes+') and startDate = "' + startDate + '" and endDate = "' + endDate + '"')
     var url = apiUrl+"?q="+data+"&env=store://datatables.org/alltableswithkeys&format=json";
-    console.log(url);
     http.get(url, function(response){
         var dat = ""
         response.on('data', function(data){
@@ -45,7 +45,6 @@ function getStocks(codes, req, res){
                 var code = codes[x];
                 stocks[codes[x]] = retreivedStocks.filter(x => x.Symbol==code);
             }
-            console.log(stocks);
             var responseData = {
                 stocks: stocks,
                 codes: codes
