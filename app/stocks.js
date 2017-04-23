@@ -55,6 +55,7 @@ function getStocks(codes, req, res){
     })
 }
 function addStock(code, req, res){
+    code = code.toUpperCase();
     var apiUrl = "http://query.yahooapis.com/v1/public/yql";
     var startDate = '2017-01-01';
     var endDate = '2017-04-08';
