@@ -1,0 +1,10 @@
+#stocks{
+    width: 80%;
+    padding-left:10%;
+}
+.stock{
+    margin-left:2em;
+    border: 2px solid gray;
+    border-radius: 3px;
+    float: left;
+}

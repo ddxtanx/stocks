@@ -16,5 +16,11 @@
   "bugs": {
     "url": "https://github.com/ddxtanx/stocks/issues"
   },
-  "homepage": "https://github.com/ddxtanx/stocks#readme"
+  "homepage": "https://github.com/ddxtanx/stocks#readme",
+  "dependencies": {
+    "body-parser": "^1.17.1",
+    "express": "^4.15.2",
+    "mongodb": "^2.2.26",
+    "twig": "^1.10.4"
+  }
 }
