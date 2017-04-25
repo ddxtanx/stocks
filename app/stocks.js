@@ -16,8 +16,8 @@ function getDb(req, res){
                 codes.push(data[x].stockCode);
             }
             getStocks(codes, req, res);
-        })
-    })
+        });
+    });
 }
 function getStocks(codes, req, res){
     var editedCodes = codes;
@@ -26,10 +26,23 @@ function getStocks(codes, req, res){
     }
     var stringCodes = editedCodes.toString();
     var apiUrl = "http://query.yahooapis.com/v1/public/yql";
-    var startDate = '2017-01-01';
     var now = new Date();
-    var endDate = now.getFullYear()+"-"+now.getMonth()+"-"+now.getDate;
-    var data = encodeURIComponent('select Symbol, Date, Close from yahoo.finance.historicaldata where symbol in ('+stringCodes+') and startDate = "' + startDate + '" and endDate = "' + endDate + '"')
+    var year = now.getFullYear();
+    var month = now.getMonth();
+    var date = now.getDate();
+    var endDate =year+"-"+month+"-"+date;
+    //Lambda/Arrow function to get date six months ago compactely
+    var startDate = (month)=>{
+        var sixMonthsAgo = new Date();
+        sixMonthsAgo.setMonth(month-6);
+        var sixYear = sixMonthsAgo.getFullYear();
+        var sixMonth = sixMonthsAgo.getMonth();
+        var sixDate = sixMonthsAgo.getDate();
+        return sixYear+"-"+sixMonth+"-"+sixDate;
+    };
+    startDate = startDate(month);
+    console.log(startDate)
+    var data = encodeURIComponent('select Symbol, Date, Close from yahoo.finance.historicaldata where symbol in ('+stringCodes+') and startDate = "' + startDate + '" and endDate = "' + endDate + '"');
     var url = apiUrl+"?q="+data+"&env=store://datatables.org/alltableswithkeys&format=json";
     http.get(url, function(response){
         var dat = ""

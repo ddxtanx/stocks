@@ -25,7 +25,7 @@ $(document).ready(function(){
     google.charts.load('current', {packages: ['corechart']});
     google.charts.setOnLoadCallback(drawChart);
     $("#submitButton").click(function(){
-        var code = $("#code").val();
+        var code = $("#code").val().toUpperCase();
         $.ajax({
             type: "POST",
             url: "addStock",
@@ -88,8 +88,8 @@ function drawChart(){
             var stockData = response.stocks;
             var codes = response.codes;
             persCodes = codes;
-            vals[0]= ["DATE"].concat(codes)
-            console.log(vals);
+            var header = [["DATE"].concat(codes)]
+            console.log(header);
             var firstCode = codes[0];
             for(var x = 0; x<stockData[firstCode].length; x++){
                 var date = stockData[firstCode][x].Date;
@@ -98,8 +98,12 @@ function drawChart(){
                     var code = codes[y];
                     search.push(parseFloat(stockData[code][x].Close));
                 }
-                vals[x+1] = [date].concat(search);
+                vals.push([date].concat(search));
             }
+            console.log(vals);
+            vals = vals.reverse();
+            console.log(vals);
+            vals = header.concat(vals);
             vals = google.visualization.arrayToDataTable(vals)
             chart = new google.visualization.LineChart(document.getElementById('chart'));
             chart.draw(vals, options);
