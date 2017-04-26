@@ -6,6 +6,35 @@ var password = process.env.PASS;
 //Declaring a user and a password variable, set in the ENVIRONMENT of the host
 var mongoUri = "mongodb://"+user+":"+password+"@ds115701.mlab.com:15701/stocks";
 //This is the mongo uri to connect to
+function getYahooUrl(codes){
+    var apiUrl = "http://query.yahooapis.com/v1/public/yql";
+    //This is the base url of the YQL api
+    var now = new Date();
+    var year = now.getFullYear();
+    var month = now.getMonth();
+    var date = now.getDate();
+    //This gets todays month day and year
+    var endDate =year+"-"+month+"-"+date;
+    //Lambda/Arrow function to get date six months ago compactely
+    var startDate = (month)=>{
+        var sixMonthsAgo = new Date();
+        sixMonthsAgo.setMonth(month-6);
+        var sixYear = sixMonthsAgo.getFullYear();
+        var sixMonth = sixMonthsAgo.getMonth();
+        var sixDate = sixMonthsAgo.getDate();
+        return sixYear+"-"+sixMonth+"-"+sixDate;
+    };
+    startDate = startDate(month);
+    console.log(startDate);
+    //Logging
+    var data = encodeURIComponent('select Symbol, Date, Close from yahoo.finance.historicaldata where symbol in ('+codes+') and startDate = "' + startDate + '" and endDate = "' + endDate + '"');
+    //This is the query part of the YQL api call
+    var url = apiUrl+"?q="+data+"&env=store://datatables.org/alltableswithkeys&format=json";
+    /*This is the full url of the YQL api call,
+      this is called to get all the stock data
+      for the ticker symbols in the data*/
+     return url;
+}
 function getDb(req, res){
     //This function grabs ticker code from the mongo database
     mongo.connect(mongoUri, function(err, db){
@@ -39,32 +68,7 @@ function getStocks(codes, req, res){
         //Adding in quotes to ensure YQL reads the tickers correctly
     }
     var stringCodes = editedCodes.toString();
-    var apiUrl = "http://query.yahooapis.com/v1/public/yql";
-    //This is the base url of the YQL api
-    var now = new Date();
-    var year = now.getFullYear();
-    var month = now.getMonth();
-    var date = now.getDate();
-    //This gets todays month day and year
-    var endDate =year+"-"+month+"-"+date;
-    //Lambda/Arrow function to get date six months ago compactely
-    var startDate = (month)=>{
-        var sixMonthsAgo = new Date();
-        sixMonthsAgo.setMonth(month-6);
-        var sixYear = sixMonthsAgo.getFullYear();
-        var sixMonth = sixMonthsAgo.getMonth();
-        var sixDate = sixMonthsAgo.getDate();
-        return sixYear+"-"+sixMonth+"-"+sixDate;
-    };
-    startDate = startDate(month);
-    console.log(startDate);
-    //Logging
-    var data = encodeURIComponent('select Symbol, Date, Close from yahoo.finance.historicaldata where symbol in ('+stringCodes+') and startDate = "' + startDate + '" and endDate = "' + endDate + '"');
-    //This is the query part of the YQL api call
-    var url = apiUrl+"?q="+data+"&env=store://datatables.org/alltableswithkeys&format=json";
-    /*This is the full url of the YQL api call,
-      this is called to get all the stock data
-      for the ticker symbols in the data*/
+    var url = getYahooUrl(stringCodes);
     http.get(url, function(response){
         var dat = "";
         response.on('data', function(data){
@@ -107,11 +111,7 @@ function getStocks(codes, req, res){
 }
 function addStock(code, req, res){
     code = code.toUpperCase();
-    var apiUrl = "http://query.yahooapis.com/v1/public/yql";
-    var startDate = '2017-01-01';
-    var endDate = '2017-04-08';
-    var data = encodeURIComponent('select Symbol, Date, Close from yahoo.finance.historicaldata where symbol in (\"'+code+'\") and startDate = "' + startDate + '" and endDate = "' + endDate + '"');
-    var url = apiUrl+"?q="+data+"&env=store://datatables.org/alltableswithkeys&format=json";
+    var url = getYahooUrl("\""+code+"\"");
     //This is the yahoo api link again
     http.get(url, function(response){
         var dat = "";
