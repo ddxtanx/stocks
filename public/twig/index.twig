@@ -12,6 +12,10 @@
     <body>
         <div id="page">
             {%if error is defined%}
+            <!-- This creates an error div and styles it
+                 if there are no tickers in the database.
+                 It also removes all other elements from being rendered,
+                 and add styling for the error div!-->
             <style>
                 #error *{
                     text-align:center;

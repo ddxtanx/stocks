@@ -6,7 +6,6 @@ var password = process.env.PASS;
 //Declaring a user and a password variable, set in the ENVIRONMENT of the host
 var mongoUri = "mongodb://"+user+":"+password+"@ds115701.mlab.com:15701/stocks";
 //This is the mongo uri to connect to
-console.log(mongoUri);
 function getDb(req, res){
     //This function grabs ticker code from the mongo database
     mongo.connect(mongoUri, function(err, db){
