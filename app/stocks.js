@@ -22,6 +22,12 @@ function getDb(req, res){
                 codes.push(data[x].stockCode);
                 //This loops through data and adds all the ticker symbols to the varibale codes
             }
+            if(codes.length==0){
+                console.log("No tickers");
+                res.render("twig/index.twig" ,{error: 'none'});
+                return;
+                //If there are no codes in the database, just render index and return
+            }
             getStocks(codes, req, res);
             //Continues on to getStocks, where codes, req, and res are passed.
         });

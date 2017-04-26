@@ -11,6 +11,24 @@
     </head>
     <body>
         <div id="page">
+            {%if error is defined%}
+            <style>
+                #error *{
+                    text-align:center;
+                    float: none;
+                }
+            </style>
+            <div id="error">
+                <div class="alert alert-danger">
+                    <h1>Please Add A Ticker Symbol!</h1>
+                </div>
+                <div id='inputElement' class='stock'>
+                    <label for='code'>Stock Code: <input type='text' id='code' placeholder='Stock Code Here:'/></label>
+                    <br/>
+                    <button type='submit' id='submitButton'>Submit</button>
+                </div>
+            </div>
+            {%else%}
             <div id="chart">
             
             </div>
@@ -28,6 +46,7 @@
                     <button type='submit' id='submitButton'>Submit</button>
                 </div>
             </div>
+            {%endif%}
         </div>
     </body>
 </html>
