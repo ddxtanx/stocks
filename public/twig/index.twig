@@ -15,6 +15,13 @@
             
             </div>
             <div id="stocks">
+                {% for code in codes %}
+                <!--Loops through codes and creates the elements!-->
+                    <div class='stock' for-code="{{code}}">
+                        <h3> {{code}} </h3>
+                        <button type='button' class='removeBtn' for-code="{{code}}">X</button>
+                    </div>
+                {%endfor%}
                 <div id='inputElement' class='stock'>
                     <label for='code'>Stock Code: <input type='text' id='code' placeholder='Stock Code Here:'/></label>
                     <br/>

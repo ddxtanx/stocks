@@ -7,9 +7,10 @@ var express = require('express'),
 app.set('views', './public');
 app.use(express.static('./public'), bodyParser());
 app.get("/", function(req, res){
-    res.render("twig/index.twig");
+    stocks.getDb(req, res);
 });
-app.get("/api/getStocks", function(req, res){
+app.post("/api/getStocks", function(req, res){
+    console.log(req.body.callType)
     stocks.getDb(req, res);
 });
 app.post("/addStock", function(req, res){
