@@ -112,7 +112,7 @@ function drawChart(){
             //Reverses vals to set data to past->present
             vals = header.concat(vals);
             //Concatenates the headers to vals
-            vals = google.visualization.arrayToDataTable(vals)
+            vals = google.visualization.arrayToDataTable(vals);
             chart = new google.visualization.LineChart(document.getElementById('chart'));
             chart.draw(vals, options);
             //Draws the chart with the data

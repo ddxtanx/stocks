@@ -2,10 +2,13 @@
 <html>
     <head>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>        
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
         <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
         <script type="text/javascript" src="/js/index.js"></script>
         <link rel="stylesheet" href="/css/index.css"/>
+        <!-- Requests to load the required libraries, Bootstrap, JQuery, Charts.js and to load index.js and index.css
+             The style and Javascript files for the website-->
     </head>
     <body>
         <div id="page">
@@ -19,6 +22,7 @@
                     text-align:center;
                     float: none;
                 }
+                /*Inline css for efficiency*/
             </style>
             <div id="error">
                 <div class="alert alert-danger">
@@ -28,24 +32,27 @@
                     <label for='code'>Stock Code: <input type='text' id='code' placeholder='Stock Code Here:'/></label>
                     <br/>
                     <button type='submit' id='submitButton'>Submit</button>
+                    <!--If no stocks are in the database, ask all users to submit a stock code-->
                 </div>
             </div>
             {%else%}
             <div id="chart">
-            
+            <!--Div for chart to be drawn in-->
             </div>
             <div id="stocks">
                 {% for code in codes %}
-                <!--Loops through codes and creates the elements!-->
+                <!--Loops through codes and creates the elements that display added ticker symbols-->
                     <div class='stock' for-code="{{code}}">
                         <h3> {{code}} </h3>
                         <button type='button' class='removeBtn' for-code="{{code}}">X</button>
+                        <!--Button to delete tickers from the database-->
                     </div>
                 {%endfor%}
                 <div id='inputElement' class='stock'>
                     <label for='code'>Stock Code: <input type='text' id='code' placeholder='Stock Code Here:'/></label>
                     <br/>
                     <button type='submit' id='submitButton'>Submit</button>
+                    <!-- Input element to add a ticker code to database-->
                 </div>
             </div>
             {%endif%}
